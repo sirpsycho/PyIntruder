@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import os
 import sys
 import requests
@@ -25,7 +26,11 @@ parser.add_option('-o', '--out',
                   default=os.getcwd(),
                   help='Directory to save HTTP responses',
                  )
-parser.set_usage("Usage: ./PyIntruder.py [options] <base url> <payload list>\n(Use '$' as variable in url that will be swapped out with each payload)\n\nExample:  PyIntruder.py http://www.example.com/file/$.pdf payloads.txt")
+parser.set_usage("""Usage: ./PyIntruder.py [options] <base url> <payload list>
+(Use '$' as variable in url that will be swapped out with each payload)
+
+Example:  PyIntruder.py http://www.example.com/file/$.pdf payloads.txt
+	""")
 options, remainder = parser.parse_args()
 
 redir = options.redir
@@ -38,12 +43,12 @@ if output_dir.endswith('/'):
 ### Assign arguments to variables
 if len(remainder) == 2:
 	baseurl = remainder[0]
-	if not '$' in baseurl:
-		print "Error: Please include variable character ('$') in URL"
+	if '$' not in baseurl:
+		print("Error: Please include variable character ('$') in URL")
 		sys.exit()
 	payloadfile = remainder[1]
 else:
-	print "Invalid number of arguments: use -h option for usage"
+	print("Invalid number of arguments: use -h option for usage")
 	sys.exit()
 
 ### Try reading payloads into variable
@@ -51,22 +56,22 @@ try:
 	with open(payloadfile) as f:
 		payloaddata = f.readlines()
 except:
-	print "Error: cannot read file '%s'" % payloadfile
+	print("Error: cannot read file '%s'" % payloadfile)
 	sys.exit()
 
 ### Attempt connection to each URL and print stats
-print "Status\tLength\tTime\tHost"
-print "---------------------------------"
+print("Status\tLength\tTime\t  Host")
+print("---------------------------------")
 
 for payload in payloaddata:
 	payload = payload.strip('\n')
 	url = baseurl.replace('$', payload)
 	r = requests.get(url, allow_redirects=redir)
-	print "%s\t%s\t%s\t%s" % (r.status_code, len(r.content), r.elapsed.total_seconds()*1000, url)
+	print("%s\t%s\t%s\t  %s" % (r.status_code, len(r.content), r.elapsed.total_seconds()*1000, url))
 	if save_responses and len(r.content) != 0:
 		try:
 			with open('%s/%s' % (output_dir, payload), 'wb') as f:
 				f.write(r.content)
 		except:
-			print "Error: could not write file '%s/%s'" % (output_dir, payload)
+			print("Error: could not write file '%s/%s'" % (output_dir, payload))
 
