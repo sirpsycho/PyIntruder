@@ -66,4 +66,5 @@ In order to download whatever files might be available at each of these links, y
 - "payloads-refined.txt" is your refined list of payloads. This can be useful in a case like this if you want to weed out a bunch of URLs that you found out don't go anywhere interesting.
 
 
-
+#Dependencies
+If it's not already installed, make sure to [install Requests](http://docs.python-requests.org/en/master/user/install/) (try running "pip install requests").
